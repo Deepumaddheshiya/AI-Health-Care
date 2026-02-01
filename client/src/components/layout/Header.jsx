@@ -170,7 +170,7 @@
 // export default Header;
 
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Heart, Menu, X, Phone, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -200,10 +200,30 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
+  // Prevent scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  // Close menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
+
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-[#020617]/80 border-b border-white/10 shadow-lg shadow-black/5">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-[#020617]/80 border-b border-white/10 shadow-lg shadow-black/5 w-full">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex items-center justify-between h-20">
 

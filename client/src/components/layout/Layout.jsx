@@ -66,7 +66,7 @@ const Layout = ({ children }) => {
       <Header />
 
       {/* Only spacing here — NO centering container */}
-      <main className="w-full">
+      <main className="w-full pt-20">
         {children}
       </main>
 
