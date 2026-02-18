@@ -84,7 +84,7 @@ app.use((req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  
+
   res.status(err.status || 500).json({
     success: false,
     error: err.message || 'Internal server error',
@@ -101,12 +101,7 @@ const startServer = async () => {
     console.log('=================================');
     console.log('Starting Rural Healthcare AI Backend...');
     console.log('=================================\n');
-    
-    // Load hospital data from CSV
-    console.log('📋 Loading hospital directory...');
-    await csvLoader.loadHospitals();
-    console.log(`✅ Loaded ${csvLoader.getHospitalCount()} hospitals from CSV\n`);
-    
+
     // Start Express server
     const PORT = config.PORT;
     app.listen(PORT, () => {
@@ -119,15 +114,20 @@ const startServer = async () => {
       console.log(`Access the API at: http://localhost:${PORT}`);
       console.log(`Health check: http://localhost:${PORT}/health\n`);
     });
-    
+
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
     process.exit(1);
   }
 };
 
-// Start the server
-startServer();
+// Background load data
+csvLoader.loadHospitals().catch(err => console.error('Initial data load failed:', err));
+
+// Start the server if not running in Vercel environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  startServer();
+}
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
